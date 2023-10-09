@@ -1,4 +1,1 @@
-r
-hello
-ddgfdsgfsd
-fdfddfd
+create a file D:/IT projects/Solidity/SafeSKD/a-new-file.txt
