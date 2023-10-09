@@ -1,5 +1,6 @@
 /** PROMISE API */
 const fs = require("fs/promises");
+const path = require("path");
 const createFile = async (path) => {
   let existingFileHandle;
   try {
@@ -16,9 +17,27 @@ const createFile = async (path) => {
   }
 };
 
+const deleteFile = (path) => {
+  console.log(`Deleting ${path} ... `);
+};
+
+const renameFile = (oldPath, newPath) => {
+  console.log(`Rename ${oldPath} to ${newPath}`);
+};
+
+const addToFile = (path, content) => {
+  console.log(`Adding to ${path}`);
+  console.log(`content to ${content}`);
+};
+
 (async () => {
   // Commands
   const CREATE_FILE = "create a file";
+  const DELETE_FILE = "delete a file";
+  const RENAME_FILE = "rename a file";
+  const ADD_TO_FILE = "add the file";
+
+  // Handle File
   const fileHandler = await fs.open("./command.txt", "r");
 
   // listen to the envet
@@ -41,6 +60,21 @@ const createFile = async (path) => {
     if (command.includes(CREATE_FILE)) {
       const filePath = command.substring(CREATE_FILE.length + 1);
       createFile(filePath);
+    }
+
+    // Delete the file
+    if (command.includes(DELETE_FILE)) {
+      const filePath = command.substring(DELETE_FILE.length + 1);
+      deleteFile(filePath);
+    }
+
+    // reanme file
+    // renamnm the file <path> to <path>
+    if (command.includes(RENAME_FILE)) {
+      const idx = command.indexOf(" to ");
+      const oldFilePath = command.substring(RENAME_FILE.length + 1, idx);
+      const newFilePath = command.substring(idx + 4);
+      renameFile(oldFilePath, newFilePath);
     }
   });
 
