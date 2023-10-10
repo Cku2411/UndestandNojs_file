@@ -5,7 +5,7 @@ const createFile = async (path) => {
   let existingFileHandle;
   try {
     existingFileHandle = await fs.open(path, "r");
-    existingFileHandle.close();
+    await existingFileHandle.close();
     return console.log(`The file ${path} already exist`);
 
     // await fs.copyFile("command.txt", path);
@@ -13,21 +13,45 @@ const createFile = async (path) => {
     console.log("Okie start created file");
     const newFileHandle = await fs.open(path, "w");
     console.log("A new file was successfully created");
-    newFileHandle.close();
+    await newFileHandle.close();
   }
 };
 
-const deleteFile = (path) => {
+const deleteFile = async (path) => {
   console.log(`Deleting ${path} ... `);
+  try {
+    await fs.unlink(path);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      console.log("this file has been deleted");
+    }
+  }
 };
 
-const renameFile = (oldPath, newPath) => {
+const renameFile = async (oldPath, newPath) => {
   console.log(`Rename ${oldPath} to ${newPath}`);
+
+  try {
+    await fs.rename(oldPath, newPath);
+  } catch (error) {
+    console.log("Some eror occured");
+    console.log(error);
+  }
 };
 
-const addToFile = (path, content) => {
+const addToFile = async (path, content) => {
+  try {
+    // flags "w" is replace and a is appending
+    const fileHandler = await fs.open(path, "a");
+    fileHandler.write(content, "utf-8");
+
+    fileHandler.close();
+  } catch (error) {
+    console.log("didn't find this file");
+  }
+
   console.log(`Adding to ${path}`);
-  console.log(`content to ${content}`);
+  console.log(`content: ${content}`);
 };
 
 (async () => {
@@ -35,7 +59,7 @@ const addToFile = (path, content) => {
   const CREATE_FILE = "create a file";
   const DELETE_FILE = "delete a file";
   const RENAME_FILE = "rename a file";
-  const ADD_TO_FILE = "add the file";
+  const ADD_TO_FILE = "add to the file";
 
   // Handle File
   const fileHandler = await fs.open("./command.txt", "r");
@@ -75,6 +99,14 @@ const addToFile = (path, content) => {
       const oldFilePath = command.substring(RENAME_FILE.length + 1, idx);
       const newFilePath = command.substring(idx + 4);
       renameFile(oldFilePath, newFilePath);
+    }
+
+    if (command.includes(ADD_TO_FILE)) {
+      const idx = command.indexOf("with content: ");
+      const filePath = command.substring(ADD_TO_FILE.length + 1, idx);
+      const content = command.substring(idx + 14);
+
+      addToFile(filePath, content);
     }
   });
 
