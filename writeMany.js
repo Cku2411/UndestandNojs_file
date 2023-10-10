@@ -13,9 +13,20 @@ const fs = require("fs/promises");
     write(index);
   });
 
+  stream.on("finish", () => {
+    // file.close();
+    console.log("does this finish");
+    console.timeEnd("test");
+    file.close();
+  });
+
   const write = async (idx) => {
     for (let i = idx; i < 100000; i++) {
       const buff = Buffer.from(` ${i} `, "utf-8");
+
+      if (i === 99999) {
+        return stream.end(buff);
+      }
 
       stream.write(buff);
       if (stream.write(buff) === false) {
@@ -25,7 +36,8 @@ const fs = require("fs/promises");
     }
   };
 
-  write(0);
+  // console.timeEnd("test");
   // file.close();
-  console.timeEnd("test");
+
+  write(0);
 })();
