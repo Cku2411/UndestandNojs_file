@@ -1,5 +1,5 @@
 const fs = require("fs/promises");
-
+const { pipeline } = require("stream");
 // (async () => {
 //   console.time("start");
 //   const desFile = await fs.open("text.txt", "w");
@@ -51,15 +51,19 @@ const fs = require("fs/promises");
   const readStream = srcFile.createReadStream();
   const writeStream = desFile.createWriteStream();
 
-  writeStream.on("drain", () => {
-    console.log("Wonder if it drain or not");
-  });
-  readStream.on("end", () => {
-    console.log("this is the end");
-  });
+  // writeStream.on("drain", () => {
+  //   console.log("Wonder if it drain or not");
+  // });
+  // readStream.on("end", () => {
+  //   console.log("this is the end");
+  // });
 
-  readStream.pipe(writeStream);
+  // readStream.pipe(writeStream);
 
+  // Uisng pipeline
+  pipeline(readStream, writeStream, (err) => {
+    console.log(err);
+  });
   // -------------------------
   console.timeEnd("start");
 })();
